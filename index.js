@@ -39,9 +39,11 @@ async function initHandlers() {
 function initDb() {
   const db = new sqlite3.Database(DATABASE);
 
-  function save(input) {
+  function save($input) {
+    const params = { $input };
+    const query = `REPLACE INTO conversions (input) VALUES ($input)`;
     return new Promise((resolve, reject) => {
-      db.run(`INSERT INTO conversions (input) VALUES ('${input}')`, err => {
+      db.run(query, params, err => {
         if (err) return reject(err);
         resolve();
       });
@@ -50,7 +52,8 @@ function initDb() {
 
   function getRows() {
     return new Promise((resolve, reject) => {
-      db.all("SELECT * FROM conversions", (err, rows) => {
+      const query = "SELECT * FROM conversions";
+      db.all(query, (err, rows) => {
         if (err) return reject(err);
         resolve(rows);
       });
